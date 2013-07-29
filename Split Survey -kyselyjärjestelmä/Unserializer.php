@@ -152,11 +152,13 @@
 		/* Name of the root tag
 		@ access	private
 		@ var		string
+		*/
    		var $_root = null;
 
 		/* Stack for all values that js found
 		@ access	private
 		@ var		array
+		*/
     		var $_dataStack  =   array();
 
 		/* /* Stack for all values that are generated
