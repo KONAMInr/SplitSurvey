@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-16"?>
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="FTG:config">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="FTG:typePlugin">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="FTG:type" type="xsd:string" />
+              <xsd:element name="FTG:asType" type="xsd:string" />
+              <xsd:element name="FTG:asFormField" type="xsd:string" />
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="FTG:formPlugin">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="FTG:formFieldID" type="xsd:string" />
+              <xsd:element name="FTG:formFieldHTML" type="xsd:string" />
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="FTG:htmlMasterPlugin">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="FTG:masterSection" type="xsd:string" />
+              <xsd:element name="FTG:sectionHtml" type="xsd:string" />
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

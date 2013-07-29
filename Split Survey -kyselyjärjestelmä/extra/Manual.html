@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>FTG:Manual</title>
+
+<style>
+.ttop
+{
+	font-weight:bold;
+	font-size:16px;
+}
+.tmiddle
+{
+	font-size:14px;
+}
+.tbottom
+{
+	font-size:12px;
+	color:#999999;
+}
+.name {font-size: 12px}
+</style>
+</head>
+
+<body>
+<p align="center"><strong>FormTableGenerator</strong><br />
+<span class="name">Michael J. Burgess</span></p>
+<div align="center">
+  <pre>GNU GENERAL PUBLIC LICENSE: Version 2, June 1999<br /></pre></div>
+  
+			  <pre>
+					If requested <small>(via support forum / email)</small> I could:
+						Add automatic CSS
+						Add extra generation functionality (see hacking xml link)
+						Add extra templating functionality-
+								not templating itself, but adding a page header/footer/menu bar etc. 
+								or user defined php function to call, which will add those</pre>
+<p align="center"><a href="#pi">Package Info</a></p>
+<p align="center"><a href="#imp">Implimentation</a></p>
+<p align="center"><a href="#xml">Configuration with XML</a></p>
+<p align="center"><a href="#const">Configuration with Constants  	</a><br />
+  <br />
+  <a href="#html">How the html is built </a> <br />
+  <br />
+<a href="#fn">Extra: Changing the default filename</a> <br />
+<br />
+<a href="#hack">Extra: Hacking the XML file</a> </p>
+<p>&nbsp;</p>
+<table width="700" border="0" align="center">
+  <tr>
+    <td>
+    <div class="ttop"><a name="pi" id="pi"></a>FormTableGenerator::Manual</div></td>
+  </tr>
+  <tr>
+    <td><div class="tmiddle">
+      <p>The FormTableGenerator or FTG class reads a database table and maps field data types to html form fields, via an xml config file, and builds a html table.  </p>
+      <p>Only Add and Edit tables are produces, delete and view must be created by your self, though it is possible to generate a view table with some hacking of the xml config file. </p>
+      <p>The xml configuration file is quite detailed, in fact no html exists embedded (hard coded) in the class file itself, thus the output of the cass is virtually enitely configurable. Rather than take html attributes as function values, I have let the user configure everything, which is ulimatly better.</p>
+      <p>The xml configuration file requires some understanding thus it is better to read this manual completely before changing any values.  </p>
+      <p>NOTE: better documentation *may* be provided at a later date. Recent changes to the class may yield unpredictable behaviour,though I have tested the class and found none- </p>
+      <p>add support forum comments if problems occur.</p>
+    </div></td>
+  </tr>
+  <tr>
+    <td><div class="tbottom"><span class="tmiddle">CSS tables would be difficult to impliment with a generator, thus i have opted to use html.</span></div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="700" border="0" align="center">
+  <tr>
+    <td><div class="ttop"><a name="imp" id="imp"></a>FormTableGenerator::Implimenting with PHP </div></td>
+  </tr>
+  <tr>
+    <td><div class="tmiddle">
+      <p>There are essentially two ways to produce the html / php* code, one is a simple return string and the other saves to a file, whose name takes a default value, which is configurable.</p>
+      <p>The output is potentially mixed, if 'Edit' is supplied to one of the parameters of the generation method, textfeilds and textareas will be automatically given an inital value of $fieldname_value, e.g., $body_value, $user_email_value. The variables are encolsed with defined constants, thus if you wanted to put the html code inside a variable you can set the php open and close tags to, '. $php .' or by default, &lt;?= $php ?&gt; (this echoes the variable).</p>
+      <p>You need to supply a database resource link to the constructor, which will be used with one query,</p>
+      <p>$FTG = new FormTableGenerator($link, $allowID[true | false]);  </p>
+      <p>The second parameter, either a true or false value, dictates whether the primary key field of a table will be displayed as html. The name of the field is defined by a constant (see FTG::constants), false is default. </p>
+      <p>Then call either $FTG-&gt;generateTable() or generatePage(), both have the same parameters, save if you want to change the default name, generatePage() has an extra $filename parameter. </p>
+      <p>echo $FTG-&gt;generatePage($tbl, $pageType, $action = '', $method = 'POST', $file = '']);<br />
+        </p>
+      <p>$tbl =  $FTG-&gt;generateTable($tbl, $pageType, $action = '', $method = 'POST'); </p>
+      <p>generatePage() returns a success (/failure) message. </p>
+      <p>$pageType should be either 'Add' or 'Edit' (with caps) special functionality is provided in both, with add, date fields a default value of the php date('Y-m-d h:i:s') function. With 'Edit' the default value is a php variable as described earlier. </p>
+      <p>E.g.,</p>
+      <p>$link = mysql_connet('localhost', 'root' '');</p>
+      <blockquote>
+        <p>if(!mysql_select_db('dbname', $link))<br />
+        {<br />
+        echo 'dbname not found'; <br />
+          } ; </p>
+        </blockquote>
+      <p>$FTG = new FormTableGenerator($link); <br />
+        <br />
+      echo $FTG-&gt;generatePage('blog', 'Add', 'http://www.example.com/app/process/blog_add');<br />
+      echo $FTG-&gt;generatePage('blog', 'Edit', 'http://www.example.com/app/process/blog_edit');</p>
+      <p>mysql_close($link);</p>
+    </div></td>
+  </tr>
+  <tr>
+    <td><div class="tbottom">THIS CLASS IS INTENDED FOR _FILE_ GENERATION, IT SHOULD NOT BE USED TO GENERATED TABLE OR FORMS ON-THE-FLY, THERE ARE OTHER CLASSES AVAILBLE WHICH WILL DO THIS (THOUGH NOT NECESSARILY FROM A DB TBL) </div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="700" border="0" align="center">
+  <tr>
+    <td><div class="ttop"><a name="xml" id="xml"></a>FormTableGenerator::Configuration with XML </div></td>
+  </tr>
+  <tr>
+    <td><div class="tmiddle">
+      <p>As said, dbtypes are mapped to html via an xml file. To start we'll look at the file (Blank xml blocks have been provided in the xml file (commented), to allow copy and pasting). </p>
+      <p>&lt;FTG:typePlugin&gt;<br />
+  &lt;FTG:type&gt;&lt;/FTG:type&gt;<br />
+  &lt;FTG:asType&gt;&lt;/FTG:asType&gt;<br />
+  &lt;FTG:asFormField&gt;&lt;/FTG:asFormField&gt;<br />
+  &lt;/FTG:typePlugin&gt;<br />
+  <br />
+  &lt;FTG:formPlugin&gt;<br />
+  &lt;FTG:formFieldID&gt;&lt;/FTG:formFieldID&gt;<br />
+  &lt;FTG:formFieldHTML&gt;&lt;![CDATA[ ]]&gt;&lt;/FTG:formFieldHTML&gt;<br />
+  &lt;/FTG:formPlugin&gt;</p>
+      <p>&lt;FTG:htmlMasterPlugin&gt;<br />
+  &lt;FTG:masterSection&gt;&lt;/FTG:masterSection&gt;<br />
+  &lt;FTG:sectionHtml&gt;&lt;![CDATA[ ]]&gt;&lt;/FTG:sectionHtml&gt;<br />
+  &lt;/FTG:htmlMasterPlugin&gt;<br />
+      <br />
+      The FTG:typePlugin block maps the database type FTG:type, to an internal type, FTG:asType, with is further mapped to a form field, FTG:asFormField, which links to FTG:formFieldID.</p>
+      <p>The type should be lowercase, int will match to tinyint, smallint and int, thus if you are looking to be specific you can specifiy the exact types BEFORE the int type. E.g. define, smallint then int, to correctly interpret the smallint type, if int is defined first all types with 'int' within them will assume the settings associated with the int setting. The more specific the type the higher it should go in the xml file, thus types listed with lengths (e.g. varchar(30) ) should go at the top. Supply the field length within brackets, as shown. </p>
+      <p>&lt;FTG:typePlugin&gt;<br />
+&lt;FTG:type&gt;int(6)&lt;/FTG:type&gt;<br />
+&lt;FTG:asType&gt;INT6&lt;/FTG:asType&gt;<br />
+&lt;FTG:asFormField&gt;my_int_field&lt;/FTG:asFormField&gt;<br />
+&lt;/FTG:typePlugin&gt;</p>
+      <p>The asType can be anything UNIQUE, the type in capitals qualifies as unique. However, usefully, FTG:type can be mapped to an existing FTG:asType, however if you do this, whatever asFormField associated with the asType prior to defining the new type will be used, i.e., if varchar(20) has been mapped to VC20 and that to textfield, if you map int(6) to VC20 a textfield will be displayed regardless of the asFormField (though it is still highly advisable to supply the asFormField incase of error). </p>
+      <p> The asFormField should corrospond EXACTLY to a FTG:formFieldID value (see below).</p>
+      <p>With an int(6) type mapped to my_int_field we need to create said field, which may be a simple drop-down box.</p>
+      <p>&lt;FTG:formPlugin&gt;<br />
+&lt;FTG:formFieldID&gt;my_int_field&lt;/FTG:formFieldID&gt;<br />
+&lt;FTG:formFieldHTML&gt;&lt;![CDATA[<br />
+<br />
+&lt;select&gt;<br />
+&lt;option value=&quot;123456&quot;&gt;123456&lt;/option&gt;<br />
+&lt;/select&gt;<br />
+<br /> 
+]]&gt;&lt;/FTG:formFieldHTML&gt;<br />
+&lt;/FTG:formPlugin&gt;  </p>
+      <p>The html associated with the field MUST go within the cdata brackets, as shown. </p>
+      <p>This is all that needs to be set to activate the type plugin, if you do not want to write a new field plugin for every type, you can use one of the predefined ones. <br />
+        <br />
+        <br />
+      IMPORTANT: there are 4 variables which are availible from inside a formPlugin:</p>
+      <p>@name --&gt; will be replaced with the corrosponding table column, e.g., 'comment_id'<br />
+        @edit --&gt; will be replaced by the standard default edit value (see implimenting)<br />
+        #phpopen#
+         --&gt; the predefined php open tag constant <br />
+      #phpclose#
+        --&gt; the predefined php close tag constant<br />
+        <br />
+        The htmlMasterPlugins are predefined and non should be added, they represent the default html output for the table and form, the FTG:masterSection name is descriptive enough inside the xml file for an editor to know what the html represents. Chaning the html is reccomended only to add class=&quot;&quot; etc. values. <br />
+        <br />
+      </p>
+    </div></td>
+  </tr>
+  <tr>
+    <td><div class="tbottom">There is an xml schema provided in the .xsd file, for the raw anatomy of the xml file. Any config file produced should be valid against this. </div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="700" border="0" align="center">
+  <tr>
+    <td><div class="ttop"><a name="const" id="const"></a>FormTableGenerator::Configuration with Constants </div></td>
+  </tr>
+  <tr>
+    <td><div class="tmiddle">
+      <p>I have simply provided the comments from the php file, constants relating to filenaming may be confusing, for extra info see below. <br />
+        <br />
+        /**<br />
+* Opening syntax for PHP, this can be modified to allow the php <br />
+* to be proccessed as if it was inside a variable:<br />
+* CHANGE TO: '. (if so desired)<br />
+* <br />
+* to produce '.$php.' rather than &lt;?=$php?&gt; (change CLOSE too [below] )<br />
+*<br />
+*/<br />
+define('FTG_PHP_OPEN', '&lt;?=');</p>
+      <p>/**<br />
+        * Closing syntax for PHP, this can be modified to allow the php <br />
+        * to be proccessed as if it was inside a variable:<br />
+        * CHANGE TO: .' (if so desired)<br />
+        * <br />
+        * to produce '.$php.' rather than &lt;?=$php?&gt; (change OPEN too [above])<br />
+        *<br />
+        */<br />
+        define('FTG_PHP_CLOSE', '?&gt;');</p>
+      <p>/**<br />
+        * Set this to modify how output files are name, <br />
+        * instead of '.php' they will end with FTG_PHP_EXT<br />
+        * If you are going to use the file as a 'content holder' you may<br />
+        * want to change this to something more descriptive, i.e.,<br />
+        * .table.php || .tbl.php || .content.php<br />
+        *<br />
+        */<br />
+        define('FTG_PHP_EXT', '.php');</p>
+      <p>/**<br />
+        * Set this to modify how output files are name, <br />
+        * instead of 'add_' or 'edit_' they will begin with FTG_FILE_OPEN<br />
+        *<br />
+        */<br />
+        define('FTG_FILE_OPEN', false);</p>
+      <p>/**<br />
+        * Change this to the primary key of your table...<br />
+        * This is NOT essential, unless you want the ID field to show up ($accessID == true) <br />
+        * <br />
+        * @see Construtor comments, Manual<br />
+        * <br />
+        */<br />
+        define('FTG_PRI_KEY', 'id');<br />
+      </p>
+    </div></td>
+  </tr>
+  <tr>
+    <td><div class="tbottom"></div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="700" border="0" align="center">
+  <tr>
+    <td><div class="ttop"><a name="html" id="html"></a>FormTableGenerator::How the html is built </div></td>
+  </tr>
+  <tr>
+    <td><div class="tmiddle">
+      <p>I am not going in to the specifics, if you would like further information regarding the operation of the class, email me, address is inside the class file. However you should know what the table looks like and how the fields are named and labeled (by default).</p>
+      <p>The table  has two columns, and two rows initally, the rows both have one cell, the top row will say either 'Add' or 'Edit' $table, with $table 's first letter capitalised. The second cell is blank, and provided as a separator. After that tableSections are added (see xml file [@one = label, @two = field]) . A table section is a label and field pair, one in each column.</p>
+      <p>The labels are the table column names with underscores and the word 'id' striped, each word is then capitalised. E.g. forum_comments_id would produce a label of Forum Comments; blog_name =&gt; Blog Name.</p>
+      <p>The labels are for descriptive values only, the name of the form field exactly matches the column name of the table, e.g.<br />
+        a textfield which represents `emoticon_id`, would be labeld Emoticon but have the name e.g. the $_REQUEST key of 'emoticon_id'.</p>
+      <p>The submit button takes the same name as the form, e.g. 'Add Blog'. The reset button is always 'Reset', this can only be changed by editing the php code.</p>
+      <p>The table is automatically given an id for css purposes, it takes the value of table_ 'Add_' or 'Edit_' $dbtable e.g,<br />
+        table_Add_blog, table_Edit_post</p>
+      </div></td>
+  </tr>
+  <tr>
+    <td><div class="tbottom">Configuration of the generated html is provided via the xml config file, see internal comments regarding the htmlMasterPlugin sections. </div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="700" border="0" align="center">
+  <tr>
+    <td><div class="ttop"><a name="fn" id="fn"></a>FormTableGenerator::Changing the defualt filename </div></td>
+  </tr>
+  <tr>
+    <td><div class="tmiddle">
+      <p>The default filename is add_ or edit_ $tablename FTG_PHP_EXT, e.g., add_user_profile.php.</p>
+      <p>The default is configurable via FTG_PHP_EXT, e.g. change that to '.table.php' to produce e.g., add_blog.table.php.</p>
+      <p>If you would like to change this completly, you can, if you change FTG_FILE_OPEN, the second option will be used:<br />
+        FTG_FILE_OPEN.$file.FTP_PHP_EXT ( where $file is supplied as a parameter in the generatePage() function [above])<br />
+        <br />
+        Thus if you change FTG_FILE_OPEN to 'table_' and FTG_PHP_EXT to '.html' and supplied a $file of 'blogADD', you would get table_blogADD.html.</p>
+      <p>&nbsp;</p>
+    </div></td>
+  </tr>
+  <tr>
+    <td><div class="tbottom">YOU ONLY NEED TO CHANGE FTG_FILE_OPEN TO ACTIVATE NON-DEFAULT FILE NAMES!</div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table width="700" border="0" align="center">
+  <tr>
+    <td><div class="ttop"><a name="fn" id="fn"></a>FormTableGenerator::Hacking the xml config file </div></td>
+  </tr>
+  <tr>
+    <td><div class="tmiddle">
+      <p>If you change all of the formPluginHtml, instead of a form field to simply ' @edit ' and generated an 'Edit' file all the form fields will be replaced by php variables, named similar to the form field. You will need to go into the file produced and change the words 'Edit' to 'View' or whatever you want.</p>
+      <p>View functionality may be provided at a lated date, but the intention of this class is to generate FORM fields, thus views are not a prequisite of the class. </p>
+    </div></td>
+  </tr>
+  <tr>
+    <td><div class="tbottom"></div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

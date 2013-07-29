@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+
+<FTG:config xmlns:FTG="" xlmns="x-schema:ftd.config.xsd.xml">
+	<FTG:typePlugin>
+		<FTG:type>varchar(4000)</FTG:type>
+		<FTG:asType>TEXT</FTG:asType>
+		<FTG:asFormField>textarea</FTG:asFormField>
+	</FTG:typePlugin>
+	
+	<FTG:typePlugin>
+		<FTG:type>text</FTG:type>
+		<FTG:asType>TEXT</FTG:asType>
+		<FTG:asFormField>textarea</FTG:asFormField>
+	</FTG:typePlugin>
+	
+	<FTG:typePlugin>
+		<FTG:type>datetime</FTG:type>
+		<FTG:asType>DATE</FTG:asType>
+		<FTG:asFormField>datefield</FTG:asFormField>
+	</FTG:typePlugin>
+	
+	<FTG:typePlugin>
+		<FTG:type>int</FTG:type>
+		<FTG:asType>INT</FTG:asType>
+		<FTG:asFormField>select</FTG:asFormField>
+	</FTG:typePlugin>
+	
+	<FTG:typePlugin>
+		<FTG:type>varchar</FTG:type>
+		<FTG:asType>VCHAR</FTG:asType>
+		<FTG:asFormField>textfield</FTG:asFormField>
+	</FTG:typePlugin>
+	
+	<FTG:formPlugin>
+		<FTG:formFieldID>textfield</FTG:formFieldID>
+		<FTG:formFieldHTML><![CDATA[<input    name="@name" type="text" value="@edit" />]]></FTG:formFieldHTML>
+	</FTG:formPlugin>
+	
+	<FTG:formPlugin>
+		<FTG:formFieldID>textarea</FTG:formFieldID>
+		<FTG:formFieldHTML><![CDATA[<textarea name="@name" cols="35" rows="8" value="@edit"></textarea>]]></FTG:formFieldHTML>
+	</FTG:formPlugin>
+	
+	
+	<FTG:formPlugin>
+		<FTG:formFieldID>datefield</FTG:formFieldID>
+		<FTG:formFieldHTML><![CDATA[<input name="@name" type="text" value="#phpopen# date('Y-m-d\'); #phpclose#"/>]]></FTG:formFieldHTML>
+	</FTG:formPlugin>
+	
+	
+	<FTG:formPlugin>
+		<FTG:formFieldID>select</FTG:formFieldID>
+		<FTG:formFieldHTML><![CDATA[
+			<select name="@name">
+				<option value="-">-</option>
+			</select>]]></FTG:formFieldHTML>
+	</FTG:formPlugin>
+
+	<FTG:formPlugin>
+		<FTG:formFieldID>label</FTG:formFieldID>
+		<FTG:formFieldHTML><![CDATA[<label for= "@name">@edit</label>]]></FTG:formFieldHTML>
+	</FTG:formPlugin>
+
+	<FTG:htmlMasterPlugin>
+		<FTG:masterSection>tableOpen</FTG:masterSection>
+		<FTG:sectionHtml><![CDATA[
+		<table id="table_@one" border="0"> <!-- @one == 'Add' or 'Edit' _tableName -->
+			<tr>
+				<td class="tableTopBar" colspan="2">@two</td>
+			</tr>
+			<tr>
+				<td class="tableBar" colspan="2">&nbsp;</td>
+			</tr>]]></FTG:sectionHtml>
+	</FTG:htmlMasterPlugin>
+	
+	<FTG:htmlMasterPlugin>
+		<FTG:masterSection>tableSection</FTG:masterSection>
+		<FTG:sectionHtml><![CDATA[
+			<tr>
+				<td>@one</td> <!-- @one == the label -->
+				<td>@two</td> <!-- @two == the field -->
+			<tr>]]></FTG:sectionHtml>
+	</FTG:htmlMasterPlugin>
+	
+	<FTG:htmlMasterPlugin>
+		<FTG:masterSection>tableClose</FTG:masterSection>
+		<FTG:sectionHtml><![CDATA[
+				<tr>
+					<td><input type="submit" name="submit" value="@one" /></td> <!-- @one == Submit Name -->
+					<td><input type="reset" name="reset" value="@two" /></td>   <!-- @two == Reset Name, useless unless php code is changed (will always be 'Reset') -->
+				</tr>
+			</table>]]></FTG:sectionHtml>
+	</FTG:htmlMasterPlugin>
+
+	<FTG:htmlMasterPlugin>
+		<FTG:masterSection>formOpen</FTG:masterSection>
+		<FTG:sectionHtml><![CDATA[<form id="form_@id" action="@action" method="@method">]]></FTG:sectionHtml> <!-- self explanatory -->
+	</FTG:htmlMasterPlugin>
+	
+	<FTG:htmlMasterPlugin>
+		<FTG:masterSection>formClose</FTG:masterSection>
+		<FTG:sectionHtml><![CDATA[ </form>]]></FTG:sectionHtml> <!-- ditto -->
+	</FTG:htmlMasterPlugin>
+</FTG:config>
+<!--
+
+<FTG:typePlugin>
+	<FTG:type></FTG:type>
+	<FTG:asType></FTG:asType>
+	<FTG:asFormField></FTG:asFormField>
+</FTG:typePlugin>
+
+
+<FTG:formPlugin>
+	<FTG:formFieldID></FTG:formFieldID>
+	<FTG:formFieldHTML><![CDATA[ ]]></FTG:formFieldHTML>
+</FTG:formPlugin>
+
+<FTG:htmlMasterPlugin>
+	<FTG:masterSection></FTG:masterSection>
+	<FTG:sectionHtml><![CDATA[ ]]></FTG:sectionHtml>
+</FTG:htmlMasterPlugin>
+-->
+
