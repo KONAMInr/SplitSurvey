@@ -1,45 +1,82 @@
 <?php
 
-/*
- * @author Nina Ranta
- * 1300381
- * Karelia-ammattikorkeakoulu
- * opinnäytetyö: Split Survey -kyselyjärjestelmä
- */
+	// This file has been sligtly modified to be compatible with the FTG xml namespace
+	require('Unserializer.php');
 
+	// Opening syntax for PHP
+	define('FTG_PHP_OPEN', '<?=');
 
+	// Closing syntax for php
+	define('FTG_PHP_CLOSE', '?>');
 
-define('FTG_PHP_OPEN', '<?=');
-define('FTG_PHP_CLOSE', '?>');
-define('FTG_PHP_EXT', '.php');
-define('FTG_FILE_OPEN', false);
-define('FTG_PRI_KEY', 'id');
+	// Have to set to modify how output files are name, instead oh '.php.' they will end with FTG_PHP_EXT
+	define('FTG_PHP_EXT', '.php');
 
-class FormTableGenerator
-{
-	var $allowID;
-	var $types;
-	var $columnField;
-	var $formField;
-	var $masterHtml;
-	var $link;
-	
-	function FormTableGenerator($link, $allowID = false)
+	// Have to set this modify how output files are name
+	define('FTG_FILE_OPEN', false);
+
+	// Have to be named as primary key of the table
+	define('FTG_PRI_KEY', 'ID');
+
+	// Used to generate tables wrapped in a form, fields are included along side descriptive lables
+	class FormTableGenerator
 	{
-		$this->link = $link;
+		/* Allow primary key to be listed on html table
+		@ var		bool
+		*/
+		var $allowID;
+	
+		// Private variables
+		var $types;
+		var $columnField;
+		var $formField;
+		var $masterHtml;
+		// Private variables
+
+		/* DB Link
+		@ var 		resource
+		*/
+		var $link;
+
+		/* Constructor, loads xml configuration file
+		if you want the 'ID' of a field to show up, set to true
+		*/
+		function FormTableGenerator($link, $allowID = false)
+		{
+			$this->link = $link;
+
 		$this->allowID = $allowID;
+
 		if(!$this->_getFTGXML())
 		{
 			die('<br /><b>Warning: </b>Failed to Process XML File: <b>ftg.config.xml</b> is required!<br />');
 		}
 	}
 	
+	/* Generates table & saves it to a file, the file need not exists
+	@ param		string		$tbl
+	DB Table name
+	@param		string		$pageType
+	'Add' or 'Edit' (capitals necessary)
+	@ param		string 		$action
+	Form's submission page
+	@param		string		$method ['GET']
+	'GET' or 'POST'
+	@ param		string		$file
+	To be used if you would like a non-default file name
+	Set FTG_FILE_OPEN to your opening filename value, then provide the main part of the filename via $file
+	@ return 	string
+	Success or error message
+	*/
 	function generatePage($tbl, $pageType, $action = '', $method = 'POST', $file = '')
 	{
 		$data = $this->generateTable($tbl, $pageType, $action, $method);
 		return $this->saveToFile($file, $data, $pageType, $tbl);
 	}
 	
+	/* Moved to private, private functions are not discussed
+	@ see THIS::generatePage()
+	*/
 	function saveToFile($file, $data, $page = '', $tbl = '')
 	{
 		$fileName =(FTG_FILE_OPEN == false) ? 
@@ -50,7 +87,14 @@ class FormTableGenerator
 		return ($result) ? $fileName.' was successfully written!' : $fileName.': failed writting!';
 	}
 	
-	
+	/* Generate a html table
+	@deprecated THIS::generatePage() preferred
+	@param		string		DB TBL		$tbl
+	@param		string		'Add' or 'Edit'		$page(capitals required!)
+	@param		string		form Action	$action
+	@param		string		form Method	$method
+	@ return 	string	
+	*/
 	function generateTable($tbl, $page, $action = '', $method = 'POST')
 	{
 		$tableInfo = $this->getTableInfo($tbl);
@@ -72,6 +116,11 @@ class FormTableGenerator
 		//return $tableInfo;
 	}
 	
+	/* Returns an array of objects describing a table
+	@param 		string		$tbl
+	DB Table
+	@ return array
+	*/
 	function getTableInfo($tbl)
 	{
 		$sql = "DESCRIBE $tbl";
@@ -101,6 +150,10 @@ class FormTableGenerator
 		return $table;
 	}
 	
+	
+	/* Converts xml to arrays, not discussed further
+	@ return	bool
+	*/
 	function _getFTGXML()
 	{
 		$xml = new XML_Unserializer(array('complexType' => 'object'));
@@ -146,6 +199,7 @@ class FormTableGenerator
 		}
 	}
 	
+	// Private function
 	function _formField($part, $name, $edit = '')
 	{
 		if($edit == 'Edit')
@@ -166,6 +220,7 @@ class FormTableGenerator
 		return $html;
 	}
 	
+	// Private function
 	function _formPart($part, $id = '', $action = '', $method = '')
 	{
 		$html = $this->masterHtml[$part];
@@ -175,6 +230,7 @@ class FormTableGenerator
 		return $html;
 	}
 	
+	// Private function
 	function _tablePart($part, $one = 'Submit', $two = 'Reset')
 	{
 		$html = $this->masterHtml[$part];
@@ -183,6 +239,7 @@ class FormTableGenerator
 		return $html;
 	}
 	
+	// Private function
 	function _cleanUp(&$obj)
 	{
 		foreach ($this->types as $needle => $type)
