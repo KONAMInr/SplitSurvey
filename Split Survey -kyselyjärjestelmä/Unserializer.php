@@ -205,7 +205,7 @@
         	return '@package_version@';
     	}
 
-   	*/ Reset all options to default options
+   	/* Reset all options to default options
 	@ access	public
 	@ see		setOptions(), XML_Unserialization(), setOptions()
 	*/
@@ -347,7 +347,7 @@
         	return $this->_root;
     	}
 
-   	*/ Start element handler for XML parser
+   	/* Start element handler for XML parser
 	@ access 	private
 	@ param		object		$parser		XML parser object
 	@ param		string		$element	XML element
